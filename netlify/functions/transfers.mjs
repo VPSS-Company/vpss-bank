@@ -1,9 +1,17 @@
+import { getSession } from "./auth.mjs";
 
 export default async function handler(request) {
   if (request.method !== "GET") {
     return Response.json(
       { success: false, error: "Method not allowed." },
       { status: 405 }
+    );
+  }
+
+  if (!getSession(request)) {
+    return Response.json(
+      { success: false, error: "Please sign in first." },
+      { status: 401 }
     );
   }
 
@@ -19,10 +27,7 @@ export default async function handler(request) {
 
   try {
     const headers = { Accept: "application/json" };
-
-    if (auth) {
-      headers.Authorization = auth;
-    }
+    if (auth) headers.Authorization = auth;
 
     const response = await fetch(url, { headers });
 
@@ -41,7 +46,7 @@ export default async function handler(request) {
     });
   } catch {
     return Response.json(
-      { success: false, error: "Unable to connect to the records service." },
+      { success: false, error: "Unable to connect to records service." },
       { status: 502 }
     );
   }
