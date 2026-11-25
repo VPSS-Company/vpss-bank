@@ -1,0 +1,131 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>VPSS BANK | Member Portal</title>
+<style>
+:root{--bg:#f2f5fa;--panel:#fff;--ink:#14233c;--muted:#73819a;--line:#e4eaf2;--nav:#10294d;--blue:#2364d2;--blue2:#174fae;--green:#15966b;--red:#d64e5d;--shadow:0 12px 35px #10294d12}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.5 Inter,system-ui,-apple-system,Segoe UI,Arial}button,input,select,textarea{font:inherit}button{cursor:pointer;border:0;border-radius:11px;padding:11px 15px;font-weight:700}.hidden{display:none!important}.auth-wrap{min-height:100vh;display:grid;grid-template-columns:1.05fr .95fr;background:var(--panel)}.auth-art{background:linear-gradient(145deg,#0d2342,#1e518f);color:white;padding:8vw;display:flex;flex-direction:column;justify-content:space-between;position:relative;overflow:hidden}.auth-art:after{content:"";position:absolute;width:520px;height:520px;border:1px solid #ffffff20;border-radius:50%;right:-190px;bottom:-210px;box-shadow:0 0 0 45px #ffffff09,0 0 0 95px #ffffff06}.brand{font-size:23px;font-weight:900;letter-spacing:.7px;display:flex;align-items:center;gap:12px}.brandmark{width:43px;height:43px;border-radius:14px;background:linear-gradient(135deg,#8ed4ff,#3877e4);display:grid;place-items:center;color:#09264b}.artcopy{max-width:480px;position:relative;z-index:1}.artcopy h1{font-size:clamp(34px,5vw,58px);line-height:1.05;letter-spacing:-2px;margin:0 0 18px}.artcopy p{color:#c8d8ee;font-size:16px}.artfoot{font-size:12px;color:#b7c9e1;position:relative;z-index:1}.auth-panel{padding:40px 7vw;display:flex;align-items:center;justify-content:center}.auth-box{width:min(420px,100%)}.auth-box h2{font-size:27px;margin:0 0 5px}.sub{color:var(--muted);margin:0 0 24px}.tabs{display:flex;background:#edf2f9;padding:4px;border-radius:12px;margin:20px 0}.tabs button{flex:1;background:transparent;color:#687891}.tabs button.active{background:white;color:#14233c;box-shadow:0 2px 8px #14233c12}.field{display:grid;gap:6px;margin:13px 0}.field label{font-size:12px;color:var(--muted);font-weight:750}.field input,.field select,.field textarea{width:100%;padding:12px 13px;border:1px solid var(--line);border-radius:10px;background:var(--panel);color:var(--ink);outline:none}.field input:focus,.field textarea:focus{border-color:#7fa8eb;box-shadow:0 0 0 3px #2364d21a}.btn-blue{background:var(--blue);color:white}.btn-blue:hover{background:var(--blue2)}.btn-light{background:var(--panel);border:1px solid var(--line);color:var(--ink)}.full{width:100%;margin-top:10px}.hint{font-size:12px;color:var(--muted);margin-top:15px}.notice{background:#fff7e6;border:1px solid #f2d69b;color:#76521b;padding:10px 12px;border-radius:10px;font-size:12px;margin:12px 0}.shell{display:flex;min-height:100vh}.sidebar{width:250px;background:var(--nav);color:#fff;padding:24px 17px;display:flex;flex-direction:column;gap:27px}.sidebar .brand{font-size:19px}.nav{display:grid;gap:7px}.nav button{background:transparent;color:#c8d5e8;text-align:left;display:flex;gap:12px}.nav button.active,.nav button:hover{background:#ffffff18;color:white}.sidefoot{margin-top:auto;color:#a9bad2;font-size:11px}.main{flex:1;min-width:0;padding:27px 32px 45px}.top{display:flex;justify-content:space-between;align-items:center;gap:14px;margin-bottom:22px}.eyebrow{font-size:11px;text-transform:uppercase;letter-spacing:1px;color:var(--muted);font-weight:800}.top h1{margin:3px 0 0;font-size:26px}.topright{display:flex;align-items:center;gap:10px}.avatar{width:39px;height:39px;border-radius:50%;background:#dce9ff;color:#164da9;display:grid;place-items:center;font-weight:850}.grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:15px}.card{background:var(--panel);border:1px solid var(--line);border-radius:17px;padding:19px;box-shadow:var(--shadow)}.balance{grid-column:span 1;background:linear-gradient(125deg,#10294d,#1e4d88);color:white;border:0;position:relative;overflow:hidden}.balance .eyebrow{color:#c4d5eb}.amount{font-size:32px;font-weight:850;letter-spacing:-1px;margin:9px 0 17px}.smallmeta{font-size:12px;color:#d5e2f3}.metric{display:flex;flex-direction:column;gap:8px}.metric .label{color:var(--muted);font-size:13px}.metric strong{font-size:23px}.metric small{color:var(--green)}.section{margin-top:23px}.sectionhead{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:12px}.sectionhead h2{font-size:18px;margin:0}.actions{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}.action{background:var(--panel);border:1px solid var(--line);padding:16px;border-radius:14px;text-align:left;color:var(--ink);display:flex;align-items:center;gap:11px}.action span:first-child{width:38px;height:38px;border-radius:12px;background:#eaf1ff;color:var(--blue);display:grid;place-items:center;font-size:19px}.view{display:none}.view.active{display:block}.tablewrap{overflow:auto}.table{width:100%;border-collapse:collapse;min-width:520px}.table th{text-align:left;color:var(--muted);font-size:11px;text-transform:uppercase;letter-spacing:.7px;padding:12px;border-bottom:1px solid var(--line)}.table td{padding:13px 12px;border-bottom:1px solid var(--line);font-size:13px}.positive{color:var(--green);font-weight:800}.negative{color:var(--red);font-weight:800}.pill{display:inline-block;padding:4px 9px;border-radius:20px;background:#e7f7f0;color:#137a57;font-size:11px;font-weight:750}.modalback{display:none;position:fixed;inset:0;background:#07162e88;z-index:5;align-items:center;justify-content:center;padding:18px}.modalback.show{display:flex}.modal{width:min(460px,100%);background:var(--panel);border-radius:18px;padding:23px;box-shadow:0 20px 70px #0003}.modal h2{margin:0 0 15px}.modalfoot{display:flex;justify-content:flex-end;gap:9px;margin-top:17px}.dark{--bg:#0d1728;--panel:#15243a;--ink:#e8eef8;--muted:#9aabc3;--line:#293a54;--shadow:0 12px 35px #0002}.dark .btn-light{background:var(--panel);color:var(--ink)}.dark .tabs{background:#22344e}.dark .tabs button.active{background:#15243a;color:#fff}
+@media(max-width:850px){.auth-wrap{grid-template-columns:1fr}.auth-art{display:none}.auth-panel{min-height:100vh;padding:28px 22px}.grid{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:650px){.shell{display:block}.sidebar{width:100%;padding:13px;gap:12px}.sidebar .brand{font-size:17px}.nav{display:flex;overflow:auto}.nav button{white-space:nowrap;font-size:12px;padding:9px}.sidefoot{display:none}.main{padding:19px 14px 35px}.top h1{font-size:22px}.grid{gap:10px}.card{padding:14px}.balance{grid-column:span 2}.actions{grid-template-columns:1fr 1fr}.action{font-size:12px;padding:11px}.amount{font-size:28px}}
+</style>
+</head>
+<body>
+<div id="auth" class="auth-wrap">
+  <section class="auth-art">
+    <div class="brand"><div class="brandmark">V</div> VPSS BANK</div>
+    <div class="artcopy"><h1>Banking, made simpler.</h1><p>A polished account portal concept for exploring everyday banking journeys.</p></div>
+    <div class="artfoot">VPSS BANK · Fictional interface prototype</div>
+  </section>
+  <section class="auth-panel"><div class="auth-box">
+    <div class="brand" style="color:var(--ink);font-size:18px"><div class="brandmark">V</div> VPSS BANK</div>
+    <h2 id="authTitle" style="margin-top:28px">Welcome back</h2><p class="sub" id="authSub">Sign in to your member workspace.</p>
+    <div class="tabs"><button id="loginTab" class="active">Sign in</button><button id="registerTab">Create profile</button></div>
+    <form id="loginForm">
+      <div class="field"><label>USERNAME</label><input name="username" autocomplete="username" required placeholder="Enter your username"></div>
+      <div class="field"><label>PASSWORD</label><input name="password" type="password" autocomplete="current-password" required placeholder="Enter your password"></div>
+      <button class="btn-blue full">Sign in</button>
+    </form>
+    <form id="registerForm" class="hidden">
+      <div class="field"><label>DISPLAY NAME</label><input name="name" required maxlength="45" placeholder="Your display name"></div>
+      <div class="field"><label>USERNAME</label><input name="username" required minlength="4" maxlength="24" pattern="[A-Za-z0-9_]+" placeholder="Choose a username"></div>
+      <div class="field"><label>PASSWORD</label><input name="password" type="password" required minlength="6" placeholder="At least 6 characters"></div>
+      <button class="btn-blue full">Create local profile</button>
+    </form>
+    <div class="notice">This is a fictional prototype. Profiles and balances are fictional sample data stored in this browser only. Do not use real passwords or personal banking details.</div>
+    <p class="hint">Want to request an account? <a href="#" id="applyLink">Apply for an account</a></p>
+    <p class="hint" style="margin-top:6px">Demo transfers work only between profiles created in this same browser. This is not a real bank or payment network.</p>
+  </div></section>
+</div>
+
+<div id="app" class="shell hidden">
+<aside class="sidebar">
+  <div class="brand"><div class="brandmark">V</div> VPSS BANK</div>
+  <nav class="nav" id="nav">
+    <button class="active" data-view="dashboard">▦ &nbsp; Overview</button>
+    <button data-view="transactions">⇄ &nbsp; Transactions</button>
+    <button data-view="profile">◎ &nbsp; Profile</button>
+  </nav>
+  <div class="sidefoot">Member portal prototype<br>Sample records only</div>
+</aside>
+<main class="main">
+<header class="top"><div><div class="eyebrow">Member workspace</div><h1 id="pageTitle">Overview</h1></div><div class="topright"><button class="btn-light" id="themeBtn">☾</button><span id="memberName" style="font-weight:700"></span><div class="avatar" id="avatar">VP</div><button class="btn-light" id="logoutBtn">Sign out</button></div></header>
+<div class="notice"><strong>Prototype:</strong> This fictional interface uses sample balances and local browser storage. It is not connected to a bank or payment network. Do not enter real credentials or sensitive financial information.</div>
+<section class="view active" id="dashboard">
+<div class="grid">
+  <div class="card balance"><div class="eyebrow">Sample available balance</div><div class="amount" id="balance">₹1,00,000.00</div><div class="smallmeta">Demo account · <span id="accountNo">VPSS-000001</span></div></div>
+  <div class="card metric"><span class="label">Transfers received</span><strong id="credits">₹0.00</strong><small id="receivedCount">0 incoming transfers</small></div>
+  <div class="card metric"><span class="label">Transfers sent</span><strong id="debits">₹0.00</strong><small id="sentCount">0 outgoing transfers</small></div>
+  <div class="card metric"><span class="label">Account type</span><strong style="font-size:18px">Everyday</strong><small>Fictional member account</small></div>
+  <div class="card metric"><span class="label">Account status</span><strong style="font-size:18px;color:var(--green)">Active</strong><small>Prototype status only</small></div>
+  <div class="card metric"><span class="label">Transfer activity</span><strong id="transferCount">0</strong><small>All-time transfers</small></div>
+</div>
+<div class="section"><div class="sectionhead"><h2>Quick actions</h2></div><div class="actions">
+<button class="action" data-action="transfer"><span>⇄</span>Transfer to another member</button>
+</div></div>
+<div class="section"><div class="sectionhead"><h2>Account information</h2></div><div class="grid account-grid">
+  <div class="card metric"><span class="label">Member ID</span><strong id="memberIdCard" style="font-size:16px">—</strong></div>
+  <div class="card metric"><span class="label">Member since</span><strong id="memberSince" style="font-size:16px">—</strong></div>
+  <div class="card metric"><span class="label">Transfer limit (demo)</span><strong>₹50,000</strong><small>Per simulated transfer</small></div>
+</div></div>
+<div class="section"><div class="sectionhead"><h2>Recent activity</h2><button class="btn-light" data-view-link="transactions">View all</button></div><div class="card tablewrap"><table class="table"><thead><tr><th>Description</th><th>Date</th><th>Reference</th><th>Amount</th></tr></thead><tbody id="recentRows"></tbody></table></div></div>
+</section>
+<section class="view" id="transactions"><div class="card"><div class="sectionhead"><h2>Transaction activity</h2><input id="searchTx" placeholder="Search activity…" style="max-width:220px;padding:10px;border:1px solid var(--line);border-radius:9px;background:var(--panel);color:var(--ink)"></div><div class="tablewrap"><table class="table"><thead><tr><th>Description</th><th>Date</th><th>Reference</th><th>Amount</th></tr></thead><tbody id="allRows"></tbody></table></div></div></section>
+<section class="view" id="profile"><div class="card"><h2>Member profile</h2><p style="color:var(--muted)">Profile information stored locally in this browser.</p><div class="field"><label>DISPLAY NAME</label><input id="profileName" readonly></div><div class="field"><label>USERNAME</label><input id="profileUsername" readonly></div><div class="field"><label>PROFILE ID</label><input id="profileId" readonly></div></div></section>
+</main></div>
+
+<div class="modalback" id="modalBack"><div class="modal"><h2 id="modalTitle">Transaction</h2><form id="actionForm"><div id="modalFields"></div><div class="modalfoot"><button type="button" class="btn-light" id="cancelModal">Cancel</button><button class="btn-blue">Confirm demo transfer</button></div></form></div></div>
+
+<div class="modalback" id="applyBack"><div class="modal"><h2>Apply for an account</h2><p class="sub">Send a basic enquiry to the site owner. Do not submit government IDs, bank details, passwords, PINs, OTPs, addresses, or other sensitive information.</p>
+<form id="applyForm">
+<div class="field"><label>NAME</label><input name="name" required maxlength="70"></div>
+<div class="field"><label>EMAIL</label><input name="email" type="email" required maxlength="120"></div>
+<div class="field"><label>ENQUIRY</label><textarea name="message" rows="3" maxlength="500" placeholder="Tell us what kind of account information you are requesting"></textarea></div>
+<button class="btn-blue full" type="submit">Submit account enquiry</button>
+<button class="btn-light full" type="button" id="closeApply">Cancel</button>
+<p class="hint" id="applyStatus" aria-live="polite"></p>
+</form></div></div>
+<script>
+
+const STORE='vpss-members-prototype-v2', SESSION='vpss-current-member-v2';
+const STARTING_BALANCE=100000;
+
+// SHEETY API CONFIGURATION
+const SHEETY_MEMBERS_URL = 'https://api.sheety.co/6673376f71ff989d9946312991bad1a2/vpssBankDemoDatabase/members';
+const SHEETY_TRANSFERS_URL = 'https://api.sheety.co/6673376f71ff989d9946312991bad1a2/vpssBankDemoDatabase/transfers';
+
+let db=loadDB(), current=null, actionType='';
+
+function loadDB(){try{let x=JSON.parse(localStorage.getItem(STORE));return x&&Array.isArray(x.users)?x:{users:[]}}catch{return {users:[]}}}
+function saveDB(){localStorage.setItem(STORE,JSON.stringify(db));render()}
+window.addEventListener('storage',e=>{if(e.key===STORE){db=loadDB();if(current&&db.users.some(u=>u.id===current)){showApp()}else showAuth()}});
+function fmt(n){return '₹'+Number(n).toLocaleString('en-IN',{minimumFractionDigits:2,maximumFractionDigits:2})}
+function esc(s){return String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
+function getUser(){return db.users.find(u=>u.id===current)}
+function switchAuth(mode){let login=mode==='login';document.getElementById('loginForm').classList.toggle('hidden',!login);document.getElementById('registerForm').classList.toggle('hidden',login);document.getElementById('loginTab').classList.toggle('active',login);document.getElementById('registerTab').classList.toggle('active',!login);document.getElementById('authTitle').textContent=login?'Welcome back':'Create your profile';document.getElementById('authSub').textContent=login?'Sign in to your member workspace.':'Create a local profile to explore the interface.'}
+document.getElementById('loginTab').onclick=()=>switchAuth('login');document.getElementById('registerTab').onclick=()=>switchAuth('register');
+document.getElementById('registerForm').onsubmit=e=>{e.preventDefault();let f=new FormData(e.target),name=String(f.get('name')).trim(),username=String(f.get('username')).trim().toLowerCase(),password=String(f.get('password'));if(db.users.some(u=>u.username===username))return alert('That username is already in use on this browser.');let user={id:'VPSS-'+Math.random().toString(36).slice(2,9).toUpperCase(),name,username,password,balance:STARTING_BALANCE,transactions:[],created:new Date().toISOString()};db.users.push(user);saveDB();current=user.id;sessionStorage.setItem(SESSION,current);e.target.reset();showApp()};
+document.getElementById('loginForm').onsubmit=e=>{e.preventDefault();let f=new FormData(e.target),u=db.users.find(x=>x.username===String(f.get('username')).trim().toLowerCase()&&x.password===String(f.get('password')));if(!u)return alert('Username or password not found in this browser. Create a local profile first.');current=u.id;sessionStorage.setItem(SESSION,current);e.target.reset();showApp()};
+function showApp(){let u=getUser();if(!u){showAuth();return}document.getElementById('auth').classList.add('hidden');document.getElementById('app').classList.remove('hidden');document.getElementById('memberName').textContent=u.name;document.getElementById('avatar').textContent=u.name.split(/\s+/).map(x=>x[0]).join('').slice(0,2).toUpperCase();document.getElementById('profileName').value=u.name;document.getElementById('profileUsername').value=u.username;document.getElementById('profileId').value=u.id;document.getElementById('accountNo').textContent=u.id;render()}
+function showAuth(){document.getElementById('app').classList.add('hidden');document.getElementById('auth').classList.remove('hidden');current=null;sessionStorage.removeItem(SESSION)}
+document.getElementById('logoutBtn').onclick=showAuth;
+function render(){let u=getUser();if(!u)return;document.getElementById('balance').textContent=fmt(u.balance);let incoming=u.transactions.filter(t=>t.amount>0),outgoing=u.transactions.filter(t=>t.amount<0),credits=incoming.reduce((s,t)=>s+t.amount,0),debits=-outgoing.reduce((s,t)=>s+t.amount,0);document.getElementById('credits').textContent=fmt(credits);document.getElementById('debits').textContent=fmt(debits);document.getElementById('receivedCount').textContent=incoming.length+' incoming transfers';document.getElementById('sentCount').textContent=outgoing.length+' outgoing transfers';document.getElementById('transferCount').textContent=u.transactions.length;document.getElementById('memberIdCard').textContent=u.id;document.getElementById('memberSince').textContent=new Date(u.created).toLocaleDateString('en-IN',{day:'2-digit',month:'short',year:'numeric'});document.getElementById('recentRows').innerHTML=tableRows(u.transactions.slice(0,5));document.getElementById('allRows').innerHTML=tableRows(u.transactions)}
+function tableRows(items){return items.map(t=>`<tr><td>${esc(t.desc)}</td><td>${esc(t.date)}</td><td>${esc(t.id)}</td><td class="${t.amount<0?'negative':'positive'}">${t.amount<0?'−':'+'}${fmt(Math.abs(t.amount))}</td></tr>`).join('')||'<tr><td colspan="4" style="padding:25px;text-align:center;color:var(--muted)">No activity recorded</td></tr>'}
+function showView(id){document.querySelectorAll('.view').forEach(v=>v.classList.toggle('active',v.id===id));document.querySelectorAll('#nav button').forEach(b=>b.classList.toggle('active',b.dataset.view===id));document.getElementById('pageTitle').textContent=({dashboard:'Overview',transactions:'Transactions',profile:'Profile'})[id]}
+document.getElementById('nav').onclick=e=>{let b=e.target.closest('[data-view]');if(b)showView(b.dataset.view)};
+document.addEventListener('click',e=>{let l=e.target.closest('[data-view-link]');if(l)showView(l.dataset.viewLink);let a=e.target.closest('[data-action]');if(a)openAction(a.dataset.action)});
+function openAction(type){actionType='transfer';document.getElementById('modalTitle').textContent='Transfer between demo members';document.getElementById('modalFields').innerHTML=`<div class="notice">This is a simulated transfer between profiles saved in this same browser. No real money moves.</div><div class="field"><label>RECIPIENT USERNAME OR MEMBER ID</label><input name="recipient" required maxlength="50" placeholder="Enter another registered demo member"></div><div class="field"><label>AMOUNT (₹)</label><input name="amount" type="number" min="1" max="50000" step=".01" required></div><div class="field"><label>TRANSFER NOTE (OPTIONAL)</label><input name="note" maxlength="60" placeholder="e.g. Shared expenses"></div>`;document.getElementById('modalBack').classList.add('show')}
+function closeAction(){document.getElementById('modalBack').classList.remove('show')}
+document.getElementById('cancelModal').onclick=closeAction;
+document.getElementById('actionForm').onsubmit=e=>{e.preventDefault();let u=getUser(),f=new FormData(e.target),amt=Number(f.get('amount'));if(!u||!Number.isFinite(amt)||amt<=0||amt>50000)return alert('Enter a transfer amount from ₹1 to ₹50,000.');if(amt>u.balance)return alert('Insufficient available sample balance.');let targetText=String(f.get('recipient')||'').trim().toLowerCase(),target=db.users.find(x=>x.id.toLowerCase()===targetText||x.username.toLowerCase()===targetText);if(!target)return alert('Recipient not found. They must have a demo profile in this same browser.');if(target.id===u.id)return alert('Choose a different member account.');let now=Date.now(),date=new Date().toISOString().slice(0,10),note=String(f.get('note')||'').trim(),ref='VP-'+now.toString().slice(-9);u.balance-=amt;target.balance+=amt;u.transactions.unshift({id:ref+'-S',desc:'Transfer sent to '+target.username+(note?' · '+note:''),date,amount:-amt});target.transactions.unshift({id:ref+'-R',desc:'Transfer received from '+u.username+(note?' · '+note:''),date,amount:amt});saveDB();closeAction();showView('transactions')};
+document.getElementById('searchTx').addEventListener('input',e=>{let u=getUser(),q=e.target.value.toLowerCase();document.getElementById('allRows').innerHTML=tableRows(u.transactions.filter(t=>(t.desc+t.id+t.date).toLowerCase().includes(q)))});
+document.getElementById('themeBtn').onclick=()=>{document.body.classList.toggle('dark');document.getElementById('themeBtn').textContent=document.body.classList.contains('dark')?'☀':'☾'};
+
+// Web3Forms is used only for a basic account enquiry (name, email, message). Do not collect sensitive KYC or bank data here.
+const WEB3FORMS_ACCESS_KEY='YOUR_WEB3FORMS_ACCESS_KEY';
+document.getElementById('applyLink').onclick=e=>{e.preventDefault();document.getElementById('applyBack').classList.add('show')};
+document.getElementById('closeApply').onclick=()=>document.getElementById('applyBack').classList.remove('show');
+document.getElementById('applyForm').onsubmit=async e=>{e.preventDefault();let status=document.getElementById('applyStatus');if(WEB3FORMS_ACCESS_KEY==='YOUR_WEB3FORMS_ACCESS_KEY'){status.textContent='Add your Web3Forms access key in the website code before submitting.';return}let data=Object.fromEntries(new FormData(e.target).entries());data.access_key=WEB3FORMS_ACCESS_KEY;data.subject='VPSS BANK — Account enquiry';data.from_name='VPSS BANK website';status.textContent='Sending…';try{let r=await fetch('https://api.web3forms.com/submit',{method:'POST',headers:{'Content-Type':'application/json','Accept':'application/json'},body:JSON.stringify(data)});let result=await r.json();if(result.success){status.textContent='Your enquiry has been submitted.';e.target.reset()}else status.textContent=result.message||'Submission failed. Please try again.'}catch{status.textContent='Could not connect. Check your internet connection and try again.'}};
+let prior=sessionStorage.getItem(SESSION);if(prior&&db.users.some(u=>u.id===prior)){current=prior;showApp()}else showAuth();
+</script>
+</body></html>
