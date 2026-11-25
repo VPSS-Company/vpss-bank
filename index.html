@@ -29,8 +29,8 @@
 <script>
 // Paste your two Sheety endpoint URLs below. Do not put private tokens in this file.
 const SHEETY_CONFIG = {
-  membersUrl: "https://api.sheety.co/6673376f71ff989d9946312991bad1a2/vpssBankDemoDatabase/members",
-  transfersUrl: "https://api.sheety.co/6673376f71ff989d9946312991bad1a2/vpssBankDemoDatabase/transfers"
+  membersUrl: "PASTE_MEMBERS_API_URL_HERE",
+  transfersUrl: "PASTE_TRANSFERS_API_URL_HERE"
 };
 let members=[], transfers=[], current=null;
 const money=n=>new Intl.NumberFormat('en-IN',{style:'currency',currency:'INR',maximumFractionDigits:2}).format(Number(n)||0);
@@ -57,5 +57,5 @@ document.getElementById('loginForm').addEventListener('submit',login);
 document.getElementById('refreshBtn').addEventListener('click',async()=>{try{transfers=await getTransfers();render();toast('Transfer records refreshed from Sheety.')}catch(e){toast(e.message)}});
 document.getElementById('transferForm').addEventListener('submit',e=>{e.preventDefault();const recipient=document.getElementById('recipient').value,amount=Number(document.getElementById('amount').value),note=document.getElementById('note').value.trim();if(!recipient||!Number.isFinite(amount)||amount<=0||amount>50000){toast('Choose another demo member and enter an amount from ₹1 to ₹50,000.');return}const target=members.find(m=>memberId(m)===recipient);toast('Preview only: '+money(amount)+' to '+memberName(target)+'. No balance or Sheet data was changed.');e.target.reset();});
 document.getElementById('themeBtn').addEventListener('click',()=>{const dark=document.documentElement.getAttribute('data-theme')!=='dark';document.documentElement.setAttribute('data-theme',dark?'dark':'light');document.getElementById('themeBtn').textContent=dark?'☀':'☾'});
-(async()=>{try{members=await getMembers();loadLoginOptions();setStatus('Members API connected. Sign in with a fictional User ID.');try{transfers=await getTransfers()}catch(e){document.getElementById('apiStatus').textContent='Transfers API issue';setStatus('Members loaded; Transfers API: '+e.message)} }catch(e){setStatus('Connection error: '+e.message);document.getElementById('loginUserId').disabled=true;document.getElementById('loginPassword').disabled=true;document.getElementById('loginBtn').disabled=true;}})();
+(async()=>{try{members=await getMembers();setStatus('Members API connected. Sign in with a fictional User ID.');try{transfers=await getTransfers()}catch(e){document.getElementById('apiStatus').textContent='Transfers API issue';setStatus('Members loaded; Transfers API: '+e.message)} }catch(e){setStatus('Connection error: '+e.message);document.getElementById('loginUserId').disabled=true;document.getElementById('loginPassword').disabled=true;document.getElementById('loginBtn').disabled=true;}})();
 </script></body></html>
