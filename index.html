@@ -27,35 +27,385 @@
 <section class="view" id="profile"><div class="welcome"><div><h1>My demo account</h1><p>Fictional member information returned by Sheety.</p></div></div><div class="card" style="max-width:700px"><div class="profileline"><span>Display name</span><b id="pName">—</b></div><div class="profileline"><span>Username</span><b id="pUser">—</b></div><div class="profileline"><span>Demo member ID</span><b id="pId">—</b></div><div class="profileline"><span>Sample balance</span><b id="pBalance">—</b></div><div class="profileline"><span>Record source</span><b>Google Sheets via Sheety</b></div><p class="formnote">Do not add real identity, banking, card, password, PIN, or OTP details to this demo sheet.</p></div></section>
 </div></main></div><div class="toast" id="toast"></div>
 <script>
-// Paste your two Sheety endpoint URLs below. Do not put private tokens in this file.
-const SHEETY_CONFIG = {
-  membersUrl: "https://api.sheety.co/6673376f71ff989d9946312991bad1a2/vpssBankDemoDatabase/members",
-  transfersUrl: "https://api.sheety.co/6673376f71ff989d9946312991bad1a2/vpssBankDemoDatabase/transfers"
+let members = [];
+let transfers = [];
+let current = null;
+
+const money = n => new Intl.NumberFormat("en-IN", {
+  style: "currency",
+  currency: "INR",
+  maximumFractionDigits: 2
+}).format(Number(n) || 0);
+
+const val = (obj, ...keys) => {
+  for (const k of keys) {
+    if (obj && obj[k] !== undefined && obj[k] !== null) return obj[k];
+  }
+  return "";
 };
-let members=[], transfers=[], current=null;
-const money=n=>new Intl.NumberFormat('en-IN',{style:'currency',currency:'INR',maximumFractionDigits:2}).format(Number(n)||0);
-const val=(obj,...keys)=>{for(const k of keys)if(obj&&obj[k]!==undefined&&obj[k]!==null)return obj[k];return ''};
-function toast(msg){const el=document.getElementById('toast');el.textContent=msg;el.style.display='block';setTimeout(()=>el.style.display='none',3200)}
-function setStatus(s){document.getElementById('loginStatus').textContent=s}
-async function getJson(url,key){if(!url||url.startsWith('PASTE_'))throw new Error('Add your Sheety API URL in SHEETY_CONFIG first.');const r=await fetch(url,{headers:{Accept:'application/json'}});if(!r.ok)throw new Error('HTTP '+r.status+' from Sheety');const j=await r.json();const rows=j[key]||j[key.toLowerCase()]||[];if(!Array.isArray(rows))throw new Error('Unexpected Sheety response. Check the sheet tab and endpoint name.');return rows}
-async function getMembers(){return getJson(SHEETY_CONFIG.membersUrl,'members')}
-async function getTransfers(){return getJson(SHEETY_CONFIG.transfersUrl,'transfers')}
-function memberId(m){return String(val(m,'memberId','memberID','member_id','id'))}
-function memberName(m){return String(val(m,'displayName','displayname','display_name','name')||val(m,'username')||'Demo Member')}
-function memberUser(m){return String(val(m,'username','userName')||'—')}
-function memberBalance(m){return Number(val(m,'sampleBalance','samplebalance','sample_balance','balance')||0)}
-function transferRows(){return transfers.slice().sort((a,b)=>String(val(b,'date','createdAt')).localeCompare(String(val(a,'date','createdAt'))))}
-function login(e){if(e)e.preventDefault();const userId=document.getElementById('loginUserId').value.trim().toLowerCase();const demoPassword=document.getElementById('loginPassword').value;if(!members.length){toast('Member records are not loaded. Check the Sheety Members API.');return}if(!userId||!demoPassword){toast('Enter a demo User ID and demo password.');return}const found=members.find(m=>memberId(m).toLowerCase()===userId||memberUser(m).toLowerCase()===userId);if(!found){toast('User ID not found in the fictional Members sheet.');return}current=found;document.getElementById('loginPassword').value='';document.getElementById('loginScreen').style.display='none';document.getElementById('app').style.display='flex';render();}
-function render(){if(!current)return;const id=memberId(current),name=memberName(current),user=memberUser(current);document.getElementById('topName').textContent=name;document.getElementById('topId').textContent=id;document.getElementById('avatar').textContent=name.split(/\s+/).map(x=>x[0]).join('').slice(0,2).toUpperCase();document.getElementById('hello').textContent='Welcome, '+name.split(' ')[0];document.getElementById('today').textContent=new Date().toLocaleDateString('en-IN',{weekday:'long',day:'numeric',month:'long',year:'numeric'});document.getElementById('balance').textContent=money(memberBalance(current));document.getElementById('balId').textContent=id;document.getElementById('snapName').textContent=name;document.getElementById('snapUser').textContent=user;document.getElementById('snapId').textContent=id;document.getElementById('pName').textContent=name;document.getElementById('pUser').textContent=user;document.getElementById('pId').textContent=id;document.getElementById('pBalance').textContent=money(memberBalance(current));document.getElementById('fromAccount').value=name+' ('+id+')';
-const mine=transfers.filter(t=>String(val(t,'senderId','senderid','sender_id'))===id||String(val(t,'recipientId','recipientid','recipient_id'))===id);let incoming=0,outgoing=0;mine.forEach(t=>{const amt=Number(val(t,'amount')||0);if(String(val(t,'recipientId','recipientid','recipient_id'))===id)incoming+=amt;else outgoing+=amt});document.getElementById('incoming').textContent=money(incoming);document.getElementById('outgoing').textContent=money(outgoing);document.getElementById('txCount').textContent=mine.length;document.getElementById('apiStatus').textContent='Connected';document.getElementById('apiStatus').style.color='var(--green)';renderTables();loadRecipients();}
-function renderTables(){const id=memberId(current),rows=transferRows().filter(t=>String(val(t,'senderId','senderid','sender_id'))===id||String(val(t,'recipientId','recipientid','recipient_id'))===id);const recent=document.getElementById('recentRows'),all=document.getElementById('allRows');if(!rows.length){recent.innerHTML='<tr><td colspan="5" class="empty">No transfer records for this demo member.</td></tr>';all.innerHTML='<tr><td colspan="6" class="empty">No transfer records found.</td></tr>';return}recent.innerHTML=rows.slice(0,5).map(t=>{const sender=String(val(t,'senderId','senderid','sender_id')),recipient=String(val(t,'recipientId','recipientid','recipient_id')),out=sender===id;return `<tr><td>${esc(val(t,'transferRef','transferref','transfer_ref','id'))}</td><td>${esc(out?'To '+recipient:'From '+sender)}</td><td>${esc(val(t,'date'))}</td><td class="${out?'negative':'positive'}">${out?'−':'+'}${money(val(t,'amount'))}</td><td><span class="pill">API record</span></td></tr>`}).join('');all.innerHTML=rows.map(t=>`<tr><td>${esc(val(t,'transferRef','transferref','transfer_ref','id'))}</td><td>${esc(val(t,'senderId','senderid','sender_id'))}</td><td>${esc(val(t,'recipientId','recipientid','recipient_id'))}</td><td>${esc(val(t,'date'))}</td><td>${money(val(t,'amount'))}</td><td>${esc(val(t,'note')||'—')}</td></tr>`).join('')}
-function loadRecipients(){const s=document.getElementById('recipient');s.innerHTML='';members.filter(m=>memberId(m)!==memberId(current)).forEach(m=>{const o=document.createElement('option');o.value=memberId(m);o.textContent=memberName(m)+' · '+memberId(m);s.appendChild(o)});if(!s.options.length)s.innerHTML='<option>No other demo members</option>'}
-function esc(x){return String(x??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
-function showView(id){document.querySelectorAll('.view').forEach(v=>v.classList.toggle('active',v.id===id));document.querySelectorAll('.nav button').forEach(b=>b.classList.toggle('active',b.dataset.view===id));document.getElementById('crumbName').textContent=id.charAt(0).toUpperCase()+id.slice(1)}
-document.querySelectorAll('[data-view]').forEach(b=>b.addEventListener('click',()=>showView(b.dataset.view)));document.querySelectorAll('[data-goto]').forEach(b=>b.addEventListener('click',()=>showView(b.dataset.goto)));
-document.getElementById('loginForm').addEventListener('submit',login);
-document.getElementById('refreshBtn').addEventListener('click',async()=>{try{transfers=await getTransfers();render();toast('Transfer records refreshed from Sheety.')}catch(e){toast(e.message)}});
-document.getElementById('transferForm').addEventListener('submit',e=>{e.preventDefault();const recipient=document.getElementById('recipient').value,amount=Number(document.getElementById('amount').value),note=document.getElementById('note').value.trim();if(!recipient||!Number.isFinite(amount)||amount<=0||amount>50000){toast('Choose another demo member and enter an amount from ₹1 to ₹50,000.');return}const target=members.find(m=>memberId(m)===recipient);toast('Preview only: '+money(amount)+' to '+memberName(target)+'. No balance or Sheet data was changed.');e.target.reset();});
-document.getElementById('themeBtn').addEventListener('click',()=>{const dark=document.documentElement.getAttribute('data-theme')!=='dark';document.documentElement.setAttribute('data-theme',dark?'dark':'light');document.getElementById('themeBtn').textContent=dark?'☀':'☾'});
-(async()=>{try{members=await getMembers();setStatus('Members API connected. Sign in with a fictional User ID.');try{transfers=await getTransfers()}catch(e){document.getElementById('apiStatus').textContent='Transfers API issue';setStatus('Members loaded; Transfers API: '+e.message)} }catch(e){setStatus('Connection error: '+e.message);document.getElementById('loginUserId').disabled=true;document.getElementById('loginPassword').disabled=true;document.getElementById('loginBtn').disabled=true;}})();
-</script></body></html>
+
+function toast(msg) {
+  const el = document.getElementById("toast");
+  el.textContent = msg;
+  el.style.display = "block";
+  setTimeout(() => el.style.display = "none", 3200);
+}
+
+function setStatus(s) {
+  document.getElementById("loginStatus").textContent = s;
+}
+
+function memberId(m) {
+  return String(val(m, "memberId", "memberID", "member_id", "id"));
+}
+
+function memberName(m) {
+  return String(
+    val(m, "displayName", "displayname", "display_name", "name") ||
+    val(m, "username") || "Demo Member"
+  );
+}
+
+function memberUser(m) {
+  return String(val(m, "username", "userName") || "");
+}
+
+function memberBalance(m) {
+  return Number(
+    val(m, "sampleBalance", "samplebalance", "sample_balance", "balance") || 0
+  );
+}
+
+function esc(x) {
+  return String(x ?? "").replace(/[&<>"']/g, c => ({
+    "&": "&amp;",
+    "<": "&lt;",
+    ">": "&gt;",
+    '"': "&quot;",
+    "'": "&#39;"
+  }[c]));
+}
+
+async function apiRequest(url, options = {}) {
+  const response = await fetch(url, {
+    ...options,
+    credentials: "same-origin",
+    headers: {
+      Accept: "application/json",
+      ...(options.headers || {})
+    }
+  });
+
+  const data = await response.json();
+
+  if (!response.ok || data.success === false) {
+    throw new Error(data.error || "Request failed.");
+  }
+
+  return data;
+}
+
+async function getMembers() {
+  const data = await apiRequest("/.netlify/functions/members");
+  return data.members || [];
+}
+
+async function getTransfers() {
+  const data = await apiRequest("/.netlify/functions/transfers");
+  return data.transfers || [];
+}
+
+function transferRows() {
+  return transfers.slice().sort((a, b) =>
+    String(val(b, "date")).localeCompare(String(val(a, "date")))
+  );
+}
+
+async function login(e) {
+  e.preventDefault();
+
+  const username = document.getElementById("loginUserId").value.trim();
+  const password = document.getElementById("loginPassword").value;
+  const button = document.getElementById("loginBtn");
+
+  if (!username || !password) {
+    toast("Enter your demo username and password.");
+    return;
+  }
+
+  button.disabled = true;
+  button.textContent = "Signing in...";
+  setStatus("Verifying demo credentials...");
+
+  try {
+    await apiRequest("/.netlify/functions/login", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ username, password })
+    });
+
+    members = await getMembers();
+
+    current = members.find(m =>
+      memberUser(m).toLowerCase() === username.toLowerCase()
+    );
+
+    if (!current) {
+      throw new Error("Your login is valid, but no matching member exists in the Members sheet.");
+    }
+
+    transfers = await getTransfers();
+
+    document.getElementById("loginPassword").value = "";
+    document.getElementById("loginScreen").style.display = "none";
+    document.getElementById("app").style.display = "flex";
+
+    render();
+    toast("Demo login successful.");
+
+  } catch (error) {
+    current = null;
+    setStatus(error.message);
+    toast(error.message);
+  } finally {
+    button.disabled = false;
+    button.textContent = "Sign in securely";
+  }
+}
+
+function render() {
+  if (!current) return;
+
+  const id = memberId(current);
+  const name = memberName(current);
+  const user = memberUser(current);
+
+  document.getElementById("topName").textContent = name;
+  document.getElementById("topId").textContent = id;
+  document.getElementById("avatar").textContent =
+    name.split(/\s+/).map(x => x[0]).join("").slice(0, 2).toUpperCase();
+
+  document.getElementById("hello").textContent =
+    "Welcome, " + name.split(" ")[0];
+
+  document.getElementById("today").textContent =
+    new Date().toLocaleDateString("en-IN", {
+      weekday: "long",
+      day: "numeric",
+      month: "long",
+      year: "numeric"
+    });
+
+  document.getElementById("balance").textContent = money(memberBalance(current));
+  document.getElementById("balId").textContent = id;
+
+  document.getElementById("snapName").textContent = name;
+  document.getElementById("snapUser").textContent = user;
+  document.getElementById("snapId").textContent = id;
+
+  document.getElementById("pName").textContent = name;
+  document.getElementById("pUser").textContent = user;
+  document.getElementById("pId").textContent = id;
+  document.getElementById("pBalance").textContent = money(memberBalance(current));
+
+  document.getElementById("fromAccount").value = name + " (" + id + ")";
+
+  const mine = transfers.filter(t =>
+    String(val(t, "senderId", "senderid", "sender_id")) === id ||
+    String(val(t, "recipientId", "recipientid", "recipient_id")) === id
+  );
+
+  let incoming = 0;
+  let outgoing = 0;
+
+  mine.forEach(t => {
+    const amount = Number(val(t, "amount") || 0);
+
+    if (String(val(t, "recipientId", "recipientid", "recipient_id")) === id) {
+      incoming += amount;
+    } else {
+      outgoing += amount;
+    }
+  });
+
+  document.getElementById("incoming").textContent = money(incoming);
+  document.getElementById("outgoing").textContent = money(outgoing);
+  document.getElementById("txCount").textContent = mine.length;
+
+  document.getElementById("apiStatus").textContent = "Connected";
+  document.getElementById("apiStatus").style.color = "var(--green)";
+
+  renderTables();
+  loadRecipients();
+}
+
+function renderTables() {
+  if (!current) return;
+
+  const id = memberId(current);
+
+  const rows = transferRows().filter(t =>
+    String(val(t, "senderId", "senderid", "sender_id")) === id ||
+    String(val(t, "recipientId", "recipientid", "recipient_id")) === id
+  );
+
+  const recent = document.getElementById("recentRows");
+  const all = document.getElementById("allRows");
+
+  if (!rows.length) {
+    recent.innerHTML =
+      '<tr><td colspan="5" class="empty">No transfer records for this demo member.</td></tr>';
+    all.innerHTML =
+      '<tr><td colspan="6" class="empty">No transfer records found.</td></tr>';
+    return;
+  }
+
+  recent.innerHTML = rows.slice(0, 5).map(t => {
+    const sender = String(val(t, "senderId", "senderid", "sender_id"));
+    const recipient = String(val(t, "recipientId", "recipientid", "recipient_id"));
+    const outgoing = sender === id;
+
+    return `<tr>
+      <td>${esc(val(t, "transferRef", "transferref", "transfer_ref", "id"))}</td>
+      <td>${esc(outgoing ? "To " + recipient : "From " + sender)}</td>
+      <td>${esc(val(t, "date"))}</td>
+      <td class="${outgoing ? "negative" : "positive"}">
+        ${outgoing ? "−" : "+"}${money(val(t, "amount"))}
+      </td>
+      <td><span class="pill">Recorded</span></td>
+    </tr>`;
+  }).join("");
+
+  all.innerHTML = rows.map(t => `
+    <tr>
+      <td>${esc(val(t, "transferRef", "transferref", "transfer_ref", "id"))}</td>
+      <td>${esc(val(t, "senderId", "senderid", "sender_id"))}</td>
+      <td>${esc(val(t, "recipientId", "recipientid", "recipient_id"))}</td>
+      <td>${esc(val(t, "date"))}</td>
+      <td>${money(val(t, "amount"))}</td>
+      <td>${esc(val(t, "note") || "—")}</td>
+    </tr>
+  `).join("");
+}
+
+function loadRecipients() {
+  const select = document.getElementById("recipient");
+  select.innerHTML = "";
+
+  members
+    .filter(m => memberId(m) !== memberId(current))
+    .forEach(m => {
+      const option = document.createElement("option");
+      option.value = memberId(m);
+      option.textContent = memberName(m) + " · " + memberId(m);
+      select.appendChild(option);
+    });
+
+  if (!select.options.length) {
+    select.innerHTML = '<option value="">No other demo members</option>';
+  }
+}
+
+function showView(id) {
+  document.querySelectorAll(".view").forEach(v =>
+    v.classList.toggle("active", v.id === id)
+  );
+
+  document.querySelectorAll(".nav button").forEach(b =>
+    b.classList.toggle("active", b.dataset.view === id)
+  );
+
+  document.getElementById("crumbName").textContent =
+    id.charAt(0).toUpperCase() + id.slice(1);
+}
+
+document.querySelectorAll("[data-view]").forEach(button => {
+  button.addEventListener("click", () => showView(button.dataset.view));
+});
+
+document.querySelectorAll("[data-goto]").forEach(button => {
+  button.addEventListener("click", () => showView(button.dataset.goto));
+});
+
+document.getElementById("loginForm").addEventListener("submit", login);
+
+document.getElementById("refreshBtn").addEventListener("click", async () => {
+  try {
+    members = await getMembers();
+    transfers = await getTransfers();
+
+    current = members.find(m =>
+      memberUser(m).toLowerCase() ===
+      document.getElementById("snapUser").textContent.toLowerCase()
+    );
+
+    if (!current) throw new Error("Demo member could not be found.");
+
+    render();
+    toast("Demo records refreshed.");
+  } catch (error) {
+    toast(error.message);
+  }
+});
+
+document.getElementById("transferForm").addEventListener("submit", async e => {
+  e.preventDefault();
+
+  const recipientId = document.getElementById("recipient").value;
+  const amount = Number(document.getElementById("amount").value);
+  const note = document.getElementById("note").value.trim();
+  const button = e.target.querySelector('button[type="submit"]');
+
+  if (!recipientId || !Number.isSafeInteger(amount) || amount <= 0 || amount > 50000) {
+    toast("Choose a recipient and enter an amount from ₹1 to ₹50,000.");
+    return;
+  }
+
+  button.disabled = true;
+  button.textContent = "Processing...";
+
+  try {
+    const result = await apiRequest("/.netlify/functions/transfer", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        senderId: memberId(current),
+        recipientId,
+        amount,
+        note
+      })
+    });
+
+    members = await getMembers();
+    transfers = await getTransfers();
+
+    current = members.find(m =>
+      memberUser(m).toLowerCase() ===
+      document.getElementById("snapUser").textContent.toLowerCase()
+    );
+
+    if (!current) throw new Error("Could not refresh your demo account.");
+
+    render();
+    e.target.reset();
+
+    toast(result.message || "Fictional demo transfer completed.");
+
+  } catch (error) {
+    toast(error.message);
+  } finally {
+    button.disabled = false;
+    button.textContent = "Preview transfer";
+  }
+});
+
+document.getElementById("themeBtn").addEventListener("click", () => {
+  const dark = document.documentElement.getAttribute("data-theme") !== "dark";
+
+  document.documentElement.setAttribute("data-theme", dark ? "dark" : "light");
+  document.getElementById("themeBtn").textContent = dark ? "☀" : "☾";
+});
+
+setStatus("Ready. Sign in with your fictional demo username and password.");
+</script>
+</body></html>
