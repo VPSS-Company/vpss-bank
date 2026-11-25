@@ -29,8 +29,8 @@
 <script>
 // Paste your two Sheety endpoint URLs below. Do not put private tokens in this file.
 const SHEETY_CONFIG = {
-  membersUrl: "PASTE_MEMBERS_API_URL_HERE",
-  transfersUrl: "PASTE_TRANSFERS_API_URL_HERE"
+  membersUrl: "https://api.sheety.co/6673376f71ff989d9946312991bad1a2/vpssBankDemoDatabase/members",
+  transfersUrl: "https://api.sheety.co/6673376f71ff989d9946312991bad1a2/vpssBankDemoDatabase/transfers"
 };
 let members=[], transfers=[], current=null;
 const money=n=>new Intl.NumberFormat('en-IN',{style:'currency',currency:'INR',maximumFractionDigits:2}).format(Number(n)||0);
