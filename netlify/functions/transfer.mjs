@@ -1,3 +1,4 @@
+import { getSession } from "./auth.mjs";
 
 export default async function handler(request) {
   if (request.method !== "POST") {
@@ -7,12 +8,11 @@ export default async function handler(request) {
     );
   }
 
-  const key = process.env.DEMO_TRANSFER_KEY;
-  const suppliedKey = request.headers.get("x-demo-key");
+  const session = getSession(request);
 
-  if (!key || suppliedKey !== key) {
+  if (!session) {
     return Response.json(
-      { success: false, error: "Demo access denied." },
+      { success: false, error: "Please sign in first." },
       { status: 401 }
     );
   }
@@ -35,10 +35,28 @@ export default async function handler(request) {
 
   if (auth) headers.Authorization = auth;
 
+  const updateMember = async (member, balance) => {
+    const url = `${membersUrl.replace(/\/$/, "")}/${member.id}`;
+
+    const response = await fetch(url, {
+      method: "PUT",
+      headers,
+      body: JSON.stringify({
+        member: { sampleBalance: balance }
+      })
+    });
+
+    if (!response.ok) {
+      throw new Error("Could not update demo balance.");
+    }
+  };
+
   let sender;
   let recipient;
   let oldSenderBalance;
   let oldRecipientBalance;
+  let senderUpdated = false;
+  let recipientUpdated = false;
 
   try {
     const body = await request.json();
@@ -46,15 +64,15 @@ export default async function handler(request) {
     const senderId = String(body.senderId || "").trim();
     const recipientId = String(body.recipientId || "").trim();
     const amount = Number(body.amount);
-    const note = String(body.note || "").trim().slice(0, 100);
+    const note = String(body.note || "").trim().slice(0, 80);
 
     if (
       !senderId ||
       !recipientId ||
       senderId === recipientId ||
-      !Number.isFinite(amount) ||
+      !Number.isSafeInteger(amount) ||
       amount <= 0 ||
-      amount > 100000
+      amount > 50000
     ) {
       return Response.json(
         { success: false, error: "Invalid transfer details." },
@@ -65,18 +83,18 @@ export default async function handler(request) {
     const membersResponse = await fetch(membersUrl, { headers });
 
     if (!membersResponse.ok) {
-      throw new Error("Could not load members.");
+      throw new Error("Could not load demo members.");
     }
 
     const membersData = await membersResponse.json();
     const members = membersData.members || [];
 
     sender = members.find(
-      member => String(member.memberId) === senderId
+      m => String(m.memberId) === senderId
     );
 
     recipient = members.find(
-      member => String(member.memberId) === recipientId
+      m => String(m.memberId) === recipientId
     );
 
     if (!sender || !recipient) {
@@ -86,14 +104,27 @@ export default async function handler(request) {
       );
     }
 
+    // The logged-in username must own the sending account.
+    if (
+      String(sender.username || "").toLowerCase() !==
+      String(session.username).toLowerCase()
+    ) {
+      return Response.json(
+        { success: false, error: "You cannot transfer from another member's account." },
+        { status: 403 }
+      );
+    }
+
     oldSenderBalance = Number(sender.sampleBalance);
     oldRecipientBalance = Number(recipient.sampleBalance);
 
     if (
       !Number.isFinite(oldSenderBalance) ||
-      !Number.isFinite(oldRecipientBalance)
+      !Number.isFinite(oldRecipientBalance) ||
+      !sender.id ||
+      !recipient.id
     ) {
-      throw new Error("Invalid demo balances.");
+      throw new Error("Invalid demo member records.");
     }
 
     if (oldSenderBalance < amount) {
@@ -106,34 +137,11 @@ export default async function handler(request) {
     const newSenderBalance = oldSenderBalance - amount;
     const newRecipientBalance = oldRecipientBalance + amount;
 
-    if (!sender.id || !recipient.id) {
-      throw new Error("Member row IDs are missing.");
-    }
-
-    const updateMember = async (member, balance) => {
-      const url = `${membersUrl.replace(/\/$/, "")}/${member.id}`;
-
-      const response = await fetch(url, {
-        method: "PUT",
-        headers,
-        body: JSON.stringify({
-          member: { sampleBalance: balance }
-        })
-      });
-
-      if (!response.ok) {
-        throw new Error("Could not update demo balance.");
-      }
-    };
-
     await updateMember(sender, newSenderBalance);
+    senderUpdated = true;
 
-    try {
-      await updateMember(recipient, newRecipientBalance);
-    } catch (error) {
-      await updateMember(sender, oldSenderBalance).catch(() => {});
-      throw error;
-    }
+    await updateMember(recipient, newRecipientBalance);
+    recipientUpdated = true;
 
     const transfer = {
       transferRef: "DEMO-" + Date.now(),
@@ -151,17 +159,12 @@ export default async function handler(request) {
     });
 
     if (!recordResponse.ok) {
-      await Promise.allSettled([
-        updateMember(sender, oldSenderBalance),
-        updateMember(recipient, oldRecipientBalance)
-      ]);
-
       throw new Error("Could not save transfer record.");
     }
 
     return Response.json({
       success: true,
-      message: "Demo transfer completed.",
+      message: "Fictional demo transfer completed.",
       transfer,
       balances: {
         sender: newSenderBalance,
@@ -170,6 +173,19 @@ export default async function handler(request) {
     });
 
   } catch (error) {
+    // Best-effort rollback if a later step fails.
+    const rollback = [];
+
+    if (senderUpdated) {
+      rollback.push(updateMember(sender, oldSenderBalance));
+    }
+
+    if (recipientUpdated) {
+      rollback.push(updateMember(recipient, oldRecipientBalance));
+    }
+
+    await Promise.allSettled(rollback);
+
     return Response.json(
       {
         success: false,
